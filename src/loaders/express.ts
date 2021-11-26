@@ -37,19 +37,23 @@ export default ({ app }: { app: express.Application }) => {
      */
     if (err.name === 'UnauthorizedError') {
       return res
-        .status(err.status)
-        .send({ message: err.message })
+        .status(200)
+        .send(
+          { 
+            returncode: "200",
+            message: "Token error"
+          }
+          )
         .end();
     }
     return next(err);
   });
 
   app.use((err : any, req : any, res : any, next : any) => {
-    res.status(err.status || 500);
-    res.json({
-      errors: {
-        message: err.message,
-      },
+    res.status(200);
+    res.json({      
+        returncode: "200",
+        message: err.message
     });
   });
 };

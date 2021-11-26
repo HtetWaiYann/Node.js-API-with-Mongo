@@ -26,8 +26,8 @@ export default (app: Router) => {
       logger.debug('Calling Sign-Up endpoint with body: %o', req.body );
       try {
         const authServiceInstance = Container.get(AuthService);
-        const { user } = await authServiceInstance.SignUp(req.body as IUserInputDTO);
-        return res.status(201).json({ user });
+        const result = await authServiceInstance.SignUp(req.body as IUserInputDTO);
+        return res.status(200).json(result);
       } catch (e) {
         logger.error('🔥 error: %o', e);
         return next(e);
@@ -45,13 +45,11 @@ export default (app: Router) => {
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      // const logger:Logger = Container.get('logger');
-      // logger.debug('Calling Sign-In endpoint with body: %o', req.body);
       try {
         const { email, password } = req.body;
         const authServiceInstance = Container.get(AuthService);
-        const { user, token } = await authServiceInstance.SignIn(email, password);
-        return res.json({ user, token }).status(200);
+        const result = await authServiceInstance.SignIn(email, password);
+        return res.json(result).status(200);
       } catch (e) {
         // logger.error('🔥 error: %o',  e );
         return next(e);

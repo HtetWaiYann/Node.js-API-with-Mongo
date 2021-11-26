@@ -13,7 +13,7 @@ export default class AuthService {
   ) {
   }
 
-  public async SignUp(userInputDTO: IUserInputDTO): Promise<{ user: IUser }> {
+  public async SignUp(userInputDTO: IUserInputDTO): Promise<object> {
     try {
       const hashedPassword = await argon2.hash(userInputDTO.password);
       const userRecord = await this.userModel.create({
@@ -25,17 +25,21 @@ export default class AuthService {
         throw new Error('User cannot be created');
       }
 
+      const token = this.generateToken(userRecord);
       const user = userRecord.toObject();
       Reflect.deleteProperty(user, 'password');
-      return { user };
+      const res = {
+        "returncode" : "300",
+        "data" : user,
+        "token" : token,
+      }
+      return (res);
     } catch (e) {
       throw e;
     }
   }
 
-  public async SignIn(email: string, password: string): Promise<{ user:IUser, token: string }> {
-    const allRecords = await this.userModel.find({})
-    console.log(allRecords)
+  public async SignIn(email: string, password: string): Promise<object> {
     const userRecord = await this.userModel.findOne({ email : email });
     if (!userRecord) {
       throw new Error('User not registered');
@@ -46,7 +50,12 @@ export default class AuthService {
       const token = this.generateToken(userRecord);
       const user = userRecord.toObject();
       Reflect.deleteProperty(user, 'password');
-      return { user, token };
+      const res = {
+        "returncode" : "300",
+        "data" : user,
+        "token" : token
+      }
+      return (res);
     } else {
       throw new Error('Invalid Password');
     }

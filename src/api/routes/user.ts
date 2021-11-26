@@ -58,4 +58,25 @@ export default (app: Router) => {
     },
   );
 
+  route.post(
+    '/get',
+    celebrate({
+      body: Joi.object({
+      }),
+    }),
+    middlewares.isAuth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const logger:Logger = Container.get('logger');
+      logger.debug('Calling Sign-Up endpoint with body: %o', req.body );
+      try {
+        const authServiceInstance = Container.get(UserService);
+        const result = await authServiceInstance.getAllUsers();
+        return res.status(200).json(result);
+      } catch (e) {
+        logger.error('🔥 error: %o', e);
+        return next(e);
+      }
+    },
+  );
+
 };

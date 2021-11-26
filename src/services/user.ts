@@ -13,9 +13,6 @@ export default class UserService {
       if (!userRecord) {
         throw new Error('User not registered');
       }
-      /**
-       * We use verify from argon2 to prevent 'timing based' attacks
-       */
       this.logger.silly('Checking password');
       const validPassword = await argon2.verify(userRecord.password, resetPwdInput.password);
       if (validPassword) {
@@ -26,7 +23,11 @@ export default class UserService {
         const update = { password: hashedPassword };
         try {
           await this.userModel.findOneAndUpdate(filter, update, {});
-          return { message: 'Password updated successfully!' };
+          const res = {
+            "returncode" : "300",
+            "message" : "Successfully updated!",
+          }
+          return res;
         } catch (e) {
           this.logger.error(e);
           throw e;
@@ -40,10 +41,29 @@ export default class UserService {
     }
   }
 
+  public async getAllUsers(): Promise<object>{
+    try{
+      const allRecords = await this.userModel.find({})
+      const res = {
+        "returncode" : "300",
+        "data" : allRecords,
+      }
+      return (res)
+    }
+    catch (e){
+      this.logger.error(e);
+      throw e;
+    }
+  }
+
   public async deleteUser(id : string): Promise<object> {
     try {
       await this.userModel.deleteOne({_id : id})
-      return ({"message" : "User deleted successfully."})
+      const res = {
+        "returncode" : "300",
+        "message" : "Successfully deleted!"
+      }
+      return (res)
     } catch (e) {
       this.logger.error(e);
       throw e;
