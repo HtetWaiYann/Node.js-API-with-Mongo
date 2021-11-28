@@ -41,7 +41,7 @@ export default ({ app }: { app: express.Application }) => {
         .send(
           { 
             returncode: "200",
-            message: "Token error"
+            message: err.message
           }
           )
         .end();

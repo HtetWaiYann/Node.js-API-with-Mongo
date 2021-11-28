@@ -15,6 +15,12 @@ export default class AuthService {
 
   public async SignUp(userInputDTO: IUserInputDTO): Promise<object> {
     try {
+      // Check user already exists with the same email.
+      const checkUser = await this.userModel.findOne({ email : userInputDTO.email });
+      if (checkUser) {
+        throw new Error('User already exists with this email.');
+      }
+      
       const hashedPassword = await argon2.hash(userInputDTO.password);
       const userRecord = await this.userModel.create({
         ...userInputDTO,
